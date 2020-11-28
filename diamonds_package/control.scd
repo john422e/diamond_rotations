@@ -25,9 +25,10 @@ comboSequences.add([2, 4, 5]);
 comboSequences.add([3, 4, 5]);
 comboSequences.add([4, 5]);
 // OSC STUFF -----------------------------------------
-ports = [10002, 10002, 10002, 10002, 10002, 10002]; // 10002, diff ports are for testing only
+ports = [10002, 10002, 10002, 10002, 10002, 10002]; // for six computers, all on same port
+//ports = [10002, 10003, 10004, 10005, 10006, 10007]; // for same computer, all on diff ports (for testing)
 hostNames = Array.newClear(6);
-// hostnames
+// hostnames MUST BE UPDATED FOR EACH SET OF COMPUTERS
 hostNames[0] = "eagle2018.local";
 hostNames[1] = "eagle2018.local";
 hostNames[2] = "eagle2018.local";

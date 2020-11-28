@@ -17,23 +17,19 @@ var tempImage="score_images/ref_pitch0/combo0/1.png";
 ~imagePath = ~parentDirectory +/+ tempImage;
 
 // synth def
-SynthDef( \tone, { arg freq=220, gate=0, amp=0.9, out=0;
-	var sig, env;
+SynthDef( \tone, { arg freq=220, gate=0, amp=1.0, out=0;
+	var sig, env; // amount of attenuation to apply to amp (0 - 1)
 	env = EnvGen.kr(Env.adsr(0.05, 0.1, 0.5, 3), gate);
 	sig = SinOsc.ar(freq);
 	sig = Pan2.ar(sig!2);
-	sig = BhobHiShelf.ar(sig, 100, 0.9);
-	sig = BhobHiShelf.ar(sig, 200, 0.9);
-	sig = BhobHiShelf.ar(sig, 300, 0.85);
-	sig = BhobHiShelf.ar(sig, 400, 0.8);
-	sig = BhobHiShelf.ar(sig, 500, 0.75);
-	sig = BhobHiShelf.ar(sig, 600, 0.1);
-	sig = BhobHiShelf.ar(sig, 700, 0.1);
-	sig = BhobHiShelf.ar(sig, 800, 0.1);
+	sig = BHiShelf.ar(sig, 150, 1.0, -6);
+	sig = BHiShelf.ar(sig, 300, 1.0, -6);
+	sig = BHiShelf.ar(sig, 450, 1.0, -6);
 	sig = sig * env * amp;
 	Out.ar(out, sig);
 }).add;
 
+s.boot;
 5.wait;
 
 // OSCdefs
