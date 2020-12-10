@@ -29,12 +29,12 @@ ports = [10002, 10002, 10002, 10002, 10002, 10002]; // for six computers, all on
 //ports = [10002, 10003, 10004, 10005, 10006, 10007]; // for same computer, all on diff ports (for testing)
 hostNames = Array.newClear(6);
 // hostnames MUST BE UPDATED FOR EACH SET OF COMPUTERS
-hostNames[0] = "eagle2018.local";
-hostNames[1] = "eagle2018.local";
-hostNames[2] = "eagle2018.local";
-hostNames[3] = "eagle2018.local";
-hostNames[4] = "eagle2018.local";
-hostNames[5] = "eagle2018.local";
+hostNames[0] = "eagle2018.local"; // computer 1
+hostNames[1] = "eagle2018.local"; // computer 2
+hostNames[2] = "eagle2018.local"; // computer 3
+hostNames[3] = "eagle2018.local"; // computer 4
+hostNames[4] = "eagle2018.local"; // computer 5
+hostNames[5] = "eagle2018.local"; // computer 6
 // now make a NetAddr for each host
 hosts = Array.new(6);
 // set up each host with hostname and port
