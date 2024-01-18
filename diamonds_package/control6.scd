@@ -6,7 +6,7 @@
 4. Pull 6 score images (.png) and freqs.csv file
 5. Send two OSC messages: 1. filepath to score image 2. frequency
 */
-s.waitForBoot{
+
 // initialize
 var startPitch, comboSequences, randSequence;
 var parentDirectory, relPath, sub1, sub2, currentDirectory, freqFile;
@@ -14,6 +14,33 @@ var freqFileReader, freqs;
 var stationOrder = [0, 1, 2, 3, 4, 5], scrambledOrder = Array.newClear(6);
 var ports, hostNames, hosts;
 var diamondLoop, sequenceLoop;
+var muted = False; // to store whether client synths are on/off
+
+// functions
+
+// MAKE SINGLE HOST
+~makeHost = {
+	arg hostname = "127.0.0.1", port=10000;
+	var host;
+	host = NetAddr.new( hostname, port);
+	host;
+};
+// MAKE HOST ARRAY
+~makeHosts = {
+	arg hostnames, port=10000;
+	var hosts;
+	hosts = Array.fill( hostnames.size, { arg i; NetAddr.new( hostnames[i], port)});
+	hosts;
+};
+
+~sendClientUpdate = {
+	arg hosts, address, msg;
+	hosts.do( {
+		arg host;
+		host.sendMsg(address, msg);
+	});
+};
+
 // set master directory
 relPath = "/score_images/";
 parentDirectory = thisProcess.nowExecutingPath.dirname; // for freqFile
@@ -29,12 +56,21 @@ ports = [10002, 10002, 10002, 10002, 10002, 10002]; // for six computers, all on
 //ports = [10002, 10003, 10004, 10005, 10006, 10007]; // for same computer, all on diff ports (for testing)
 hostNames = Array.newClear(6);
 // hostnames MUST BE UPDATED FOR EACH SET OF COMPUTERS
-hostNames[0] = "eagle2018.local"; // computer 1
-hostNames[1] = "eagle2018.local"; // computer 2
-hostNames[2] = "eagle2018.local"; // computer 3
-hostNames[3] = "eagle2018.local"; // computer 4
-hostNames[4] = "eagle2018.local"; // computer 5
-hostNames[5] = "eagle2018.local"; // computer 6
+hostNames[0] = "computer1.local"; // update with computer 1 hostname
+hostNames[1] = "computer2.local"; // update with computer 2 hostname
+hostNames[2] = "computer3.local"; // update with computer 3 hostname
+hostNames[3] = "computer4.local"; // update with computer 4 hostname
+hostNames[4] = "computer5.local"; // update with computer 5 hostname
+hostNames[5] = "computer6.local"; // update with computer 6 hostname
+
+// for testing only:
+//hostNames[0] = "eagle2018.local"; // update with computer 1 hostname
+//hostNames[1] = "eagle2018.local"; // update with computer 2 hostname
+//hostNames[2] = "eagle2018.local"; // update with computer 3 hostname
+//hostNames[3] = "eagle2018.local"; // update with computer 4 hostname
+//hostNames[4] = "eagle2018.local"; // update with computer 5 hostname
+//hostNames[5] = "eagle2018.local"; // update with computer 6 hostname
+
 // now make a NetAddr for each host
 hosts = Array.new(6);
 // set up each host with hostname and port
@@ -45,6 +81,8 @@ for( 0, hostNames.size-1, {
 	host = NetAddr.new(hostNames[i], ports[i]);
 	hosts.add(host);
 });
+
+
 // DISPLAY STUFF --------------------------------------
 // create window to print on
 ~window = Window.new("diamonds controller", bounds:Rect(10,100,500,500), resizable: true);
@@ -78,6 +116,7 @@ for( 0, hostNames.size-1, {
 				freqFileReader = CSVFileReader.read(freqFile);
 				freqs = freqFileReader[0]; // just get the freqs (array not clean)
 				freqs.postln;
+				//hosts.do
 				for( 0, 5, {
 					arg i;
 					var filePath, freq, host;
@@ -91,7 +130,6 @@ for( 0, hostNames.size-1, {
 					// send freq
 					host.sendMsg('/freq', freq);
 					[filePath, freq].postln;
-					//"HEYYYYYYY".postln;
 				});
 				i.yield;
 			}
@@ -113,6 +151,19 @@ for( 0, hostNames.size-1, {
 				~diamondLoop.next;
 			});
 	});
-};
+	if( keycode == 46, // 'm' for mute (toggles on/off)
+		{
+			if( muted == False, {
+				~sendClientUpdate.(hosts, "/synthState", 0);
+				muted = True;
+				"MUTE ON".postln;
+			},
+			{
+				~sendClientUpdate.(hosts, "/synthState", 1);
+				muted = False;
+				"MUTE OFF".postln;
+			}
+			);
+	});
 };
 )
